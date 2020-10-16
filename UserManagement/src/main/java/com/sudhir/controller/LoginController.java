@@ -13,7 +13,7 @@ public class LoginController {
 	 * 
 	 * @return String
 	 */
-	@GetMapping("/")
+	@GetMapping(value={"/","index"})
 	public String index() {
 		return "index";
 	}

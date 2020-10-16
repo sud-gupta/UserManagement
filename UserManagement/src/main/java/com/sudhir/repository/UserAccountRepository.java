@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.sudhir.entity.UserAccountEntity;
 
-public interface UserAccountRepository  extends JpaRepository<UserAccountEntity, Serializable>{
-
+public interface UserAccountRepository  extends JpaRepository<UserAccountEntity, String>{
+	
+	// select * from USER_ACCOUNT where email=:email
+	public UserAccountEntity findByEmail(String email);
 }

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -14,9 +15,10 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "USER_ACCOUNTS")
+@Table(name = "USER_ACCOUNT")
 public class UserAccountEntity {
 	@Id
+	@GeneratedValue
     @Column(name = "user_id")
 	private Integer userId;
 	@Column(name = "first_name")
@@ -26,7 +28,7 @@ public class UserAccountEntity {
 	@Column(name = "email")
 	private String email;
 	@Column(name = "phno")
-	private Integer phno;
+	private String phno;
 	@Column(name = "dob")
 	private Date dob;
 	@Column(name = "gender")
@@ -47,4 +49,5 @@ public class UserAccountEntity {
 	@Column(name = "updated_date")
 	@UpdateTimestamp
 	private Date updatedDate;
+	
 }

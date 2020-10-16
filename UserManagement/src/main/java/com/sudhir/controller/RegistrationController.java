@@ -4,26 +4,39 @@ import java.util.Map;
 
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import com.sudhir.model.UserAccount;
+import com.sudhir.service.UserService;
 
 @Controller
 public class RegistrationController {
-
+	
+	@Autowired
+	private UserService userService;
+	
+	@ModelAttribute
+	public void loadFormData(Model model) {
+		UserAccount userAccountObj=new UserAccount();
+		model.addAttribute("userAcc",userAccountObj);
+		
+		Map<Integer, String> countriesMap = userService.loadCountries();
+		model.addAttribute("countries", countriesMap);
+	}
+	
 	@GetMapping("/register")
 	public String loadRegForm(Model model) {
-		// TODO: We should write logic here
-		return "registration";
+		
+		return "Registration";
 	}
 
 	@GetMapping("/uniqueMailCheck")
 	public @ResponseBody String isEmailUnique(@RequestParam("email") String email) {
-		String response = "";
-		// TODO:We should write logic here
-		return response;
+		return userService.isUniqueEmail(email) ? "UNIQUE" : "DUPLICATE";
 	}
 
 	@GetMapping("/countryChange")
@@ -42,8 +55,13 @@ public class RegistrationController {
 	
 	@PostMapping("/userRegistration")
 	public String handleRegisterBtn(UserAccount userAcc, Model model) {
-		//TODO: We should write logic here
-		return "registration";
+		boolean isSaved=userService.saveUserAccount(userAcc);
+		if(isSaved) {
+			model.addAttribute("succMsg", "Registration Successfull");
+		}else {
+			model.addAttribute("failMsg", "Registration Failed");
+		}
+		return "Registration";
 	}
 
 }
