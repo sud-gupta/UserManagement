@@ -1,8 +1,13 @@
 package com.sudhir.service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +22,15 @@ import com.sudhir.repository.CityRepository;
 import com.sudhir.repository.CountryRepository;
 import com.sudhir.repository.StateRepository;
 import com.sudhir.repository.UserAccountRepository;
+import com.sudhir.util.EmailUtils;
+
 
 @Service
 public class UserServiceImpl implements UserService {
-
+	
+	@Autowired
+	private EmailUtils emailUtils;
+	
 	@Autowired
 	private UserAccountRepository userAccRepo;
 
@@ -95,20 +105,43 @@ public class UserServiceImpl implements UserService {
 		UserAccountEntity userAccountEntity=new UserAccountEntity();
 		BeanUtils.copyProperties(userAccount, userAccountEntity);
 		UserAccountEntity saveEntity = userAccRepo.save(userAccountEntity);
-				
-		return saveEntity.getUserId() !=null ? true : false;
+		if(saveEntity.getUserId() !=null) {
+			String to=userAccount.getEmail();
+			String subject="Registeration Successfully";
+			String body=getRegSuccMailBody(userAccount);
+			sendRegSuccEmail(to, subject, body);
+			return true;
+		}
+		return  false;
 	}
 
 	@Override
 	public String getRegSuccMailBody(UserAccount userAccount) {
-		// TODO Auto-generated method stub
-		return null;
+		String fileName = "UnlockAccountMailBodyTemplate.txt";
+		List<String> replacedLines = null;
+		String mailBody = null;
+		try {
+			Path path = Paths.get(fileName, "");
+			Stream<String> lines = Files.lines(path);
+
+			replacedLines = lines.map(line -> line.replace("{FNAME}", userAccount.getFirstName())
+								 .replace("{LNAME}", userAccount.getLastName())
+								 .replace("{TEMP-PWD}", userAccount.getPassword())
+								 .replace("{EMAIL}", userAccount.getEmail()))
+								 .collect(Collectors.toList());
+
+			mailBody = String.join("", replacedLines);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return mailBody;
 	}
 
 	@Override
 	public boolean sendRegSuccEmail(String to, String subject, String body) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		return emailUtils.sendEmail(to,subject,body);
 	}
 
 	@Override
