@@ -41,16 +41,12 @@ public class RegistrationController {
 
 	@GetMapping("/countryChange")
 	public @ResponseBody Map<Integer, String> handleCountryChangeEvnt(@RequestParam("countryId") Integer countryId) {
-		Map<Integer, String> statesMap = null;
-		// TODO: We should write logic here
-		return statesMap;
+		return userService.loadStatesByCountryId(countryId);
 	}
 
 	@GetMapping("/stateChange")
 	public @ResponseBody Map<Integer, String> handleStateChangeEvnt(@RequestParam("stateId") Integer stateId) {
-		Map<Integer, String> citiesMap = null;
-		// TODO: We should write logic here
-		return citiesMap;
+		return userService.loadCitiesByStateId(stateId);
 	}
 	
 	@PostMapping("/userRegistration")
