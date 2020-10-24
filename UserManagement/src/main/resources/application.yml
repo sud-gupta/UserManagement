@@ -1,5 +1,8 @@
 server:
   port: 9090
+app: 
+  welcomeMsg: Welcome To Ashok IT..!!
+  greetMsg: Good Morning..!!
 spring:
   datasource:
     username: sa
