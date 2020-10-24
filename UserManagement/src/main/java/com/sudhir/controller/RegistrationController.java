@@ -53,7 +53,7 @@ public class RegistrationController {
 	public String handleRegisterBtn(UserAccount userAcc, Model model) {
 		boolean isSaved=userService.saveUserAccount(userAcc);
 		if(isSaved) {
-			model.addAttribute("succMsg", "Registration Successfull");
+			model.addAttribute("succMsg", "Your Registration Almost completed.Please check your email to Unlock Your Account");
 		}else {
 			model.addAttribute("failMsg", "Registration Failed");
 		}

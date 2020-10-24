@@ -9,6 +9,7 @@
 <body>
 	<div align="center">
 	<h3>Sign Here</h3>
+	<font color='red'>${failMsg}</font>
 		<form action="signin" method="POST">
 			<table>
 				<tr>
@@ -24,7 +25,7 @@
 					<td><input type="submit" value="Sign-In" /></td>
 				</tr>
 				<tr>
-					<td><a href="#" style="margin: 10px">Forgot Password</a></td>
+					<td><a href="forgotPwd" style="margin: 10px">Forgot Password</a></td>
 <!-- 					&nbsp; -->
 					<td><a href="register">Sign-Up</a></td>
 				</tr>

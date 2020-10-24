@@ -45,8 +45,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String loginCheck(String email, String pwd) {
-		// TODO Auto-generated method stub
-		return null;
+		UserAccountEntity entity= userAccRepo.findByEmailAndPassword(email, pwd);
+		if(entity==null) {
+			return "Invalid Credentials";
+		}else if(entity.getStatus().equals("LOCKED")) {
+			return "Your Account is locked";
+		}else {
+			return "VALID";
+		}
+		
 	}
 
 	@Override
@@ -146,32 +153,65 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean isTempPwdValid(String email, String tempPwd) {
-		// TODO Auto-generated method stub
-		return false;
+		UserAccountEntity entity=userAccRepo.findByEmailAndPassword(email, tempPwd);
+		return entity !=null ? true : false;
 	}
 
 	@Override
 	public boolean unlockAccount(String email, String password) {
-		// TODO Auto-generated method stub
-		return false;
+		UserAccountEntity entity=userAccRepo.findByEmail(email);
+		entity.setStatus("UNLOCKED");
+		entity.setPassword(password);
+		UserAccountEntity saveEntity=userAccRepo.save(entity);
+		return saveEntity.getUserId()!=null?true:false;
 	}
 
 	@Override
 	public String recoverPassword(String email) {
-		// TODO Auto-generated method stub
-		return null;
+		UserAccountEntity entity=userAccRepo.findByEmail(email);
+		if(entity !=null) {
+			UserAccount account=new UserAccount();
+			BeanUtils.copyProperties(entity, account);
+			String body=getRecoverPwdEmailBody(account);
+			String to=account.getEmail();
+			String subject="Password Recovery ";
+			return sendPwdToEmail(to, subject, body);
+		}else {
+			return "FAIL";
+		}
+		
 	}
 
 	@Override
 	public String getRecoverPwdEmailBody(UserAccount userAccount) {
-		// TODO Auto-generated method stub
-		return null;
+		String fileName = "RecoverPasswordMailBodyTemplate.txt";
+		List<String> replacedLines = null;
+		String mailBody = null;
+		try {
+			Path path = Paths.get(fileName, "");
+			Stream<String> lines = Files.lines(path);
+
+			replacedLines = lines.map(line -> line.replace("{FNAME}", userAccount.getFirstName())
+								 .replace("{LNAME}", userAccount.getLastName())
+								 .replace("{PWD}", userAccount.getPassword()))
+								 .collect(Collectors.toList());
+
+			mailBody = String.join("", replacedLines);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return mailBody;
+
 	}
 
 	@Override
-	public String sendPwdToEmail(String email, String subject, String body) {
-		// TODO Auto-generated method stub
-		return null;
+	public String sendPwdToEmail(String to, String subject, String body) {
+		boolean isSent=emailUtils.sendEmail(to, subject, body);
+		if(isSent) {
+			return "SUCCESS";
+		}
+		return "FAILED";
 	}
 
 }
